@@ -83,61 +83,61 @@ public:
      */
     bool isSafe (int pid, int * req, string & sequenceOrReason) {
 		
-		bool finished[numProc];
-		int i,k;
+		bool finished[numProc];												// Finished process flag array
+		int i,k;															// Loop counters
 
-		for(i = 0; i < numResources; i++) {
-			if(req[i] > max[pid][i]) {
+		for(i = 0; i < numResources; i++) {									// Initial request check
+			if(req[i] > max[pid][i]) {											// If request exceeds max
 				sequenceOrReason = "Request is invalid. Exceeds process max.";
 				return false;
 			}
-			else if(req[i] > available[i]) {
+			else if(req[i] > available[i]) {									// If request exceeds available
 				sequenceOrReason = "not enough resources available";
 				return false;
 			}
 			else {
-				allocation[pid][i] += req[i];
-				available[i] -= req[i];
+				allocation[pid][i] += req[i];									// Request good, add to allocated
+				available[i] -= req[i];											// Remove from available
 			}
 		}
 
-		int count = 0;
-		while(count < numProc) {
-			bool sucess = false;
-			for(i = 0; i < numProc; i++) {
-				if(finished[i] == 0) {
-					int j = 0;
-					for(j = 0; j < numResources; j++) {
-						int updateNeed[numProc][numResources];
+		int count = 0;														// Count of successful processes
+		while(count < numProc) {											// Loop while count is less than numProc
+			bool sucess = false;											// Safe state sequence flag
+			for(i = 0; i < numProc; i++) {									// Loop through each process
+				if(finished[i] == 0) {										// Continue if process is not completed
+					int j = 0;												// Resource loop/flag
+					for(j = 0; j < numResources; j++) {						// If not enough resources, cannot complete
+						int updateNeed[numProc][numResources];				// Current resource requirement
 						updateNeed[i][j] = max[i][j] - allocation[i][j];
 						if(available[j] < updateNeed[i][j]) {
 							break;
 						}
 					}
-						if(j == numResources) {
+						if(j == numResources) {								// If all resources can be satisfied
 							for(k = 0; k < numResources; k++) {
-								available[k] += allocation[i][k];
-								allocation[i][k] = 0;
+								available[k] += allocation[i][k];			// Add allocated to available
+								allocation[i][k] = 0;						// Set allocation to 0
 							}
-								stringstream temp;
+								stringstream temp;							// Add finished process to sequence
 								temp << i;
 								string tempS = temp.str();
 								sequenceOrReason += "P" + tempS + " -> ";
-								count++;
-								finished[i] = 1;
-								sucess = true;
-								i = -1;
+								count++;									// Increment finished counter
+								finished[i] = 1;							// Set process to finished
+								sucess = true;								// Flag is true, continue loop
+								i = -1;										// Reset process loop counter
 							}
 						}
 					}
 
-					if(sucess == false) {
+					if(sucess == false) {									// If no successes in all processes, fail
 						sequenceOrReason = "result in unsafe state";
 						return false;
 					}
 				}
 
-				sequenceOrReason.erase(sequenceOrReason.end()-4, sequenceOrReason.end());
+				sequenceOrReason.erase(sequenceOrReason.end()-4, sequenceOrReason.end());	// Remove extra delimiter
     }
 };
 
