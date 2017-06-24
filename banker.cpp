@@ -87,8 +87,12 @@ public:
 		int i,k;
 
 		for(i = 0; i < numResources; i++) {
-			if(req[i] > available[i]) {
-				sequenceOrReason = "not enough resources available\n";
+			if(req[i] > max[pid][i]) {
+				sequenceOrReason = "Request is invalid. Exceeds process max.";
+				return false;
+			}
+			else if(req[i] > available[i]) {
+				sequenceOrReason = "not enough resources available";
 				return false;
 			}
 			else {
@@ -105,16 +109,14 @@ public:
 					int j = 0;
 					for(j = 0; j < numResources; j++) {
 						int updateNeed[numProc][numResources];
-						updateNeed[i][j] = max[i][j] - available[j];
-						printf("need %d vs avail %d\n", updateNeed[i][j], available[j] + allocation[i][j]);
-						if(updateNeed[i][j] > available[j] + allocation[i][j]) break;
+						updateNeed[i][j] = max[i][j] - allocation[i][j];
+						if(available[j] < updateNeed[i][j]) {
+							break;
+						}
 					}
-
 						if(j == numResources) {
-							printf("current proc is: %d\n", i);
 							for(k = 0; k < numResources; k++) {
 								available[k] += allocation[i][k];
-								printf("added %d\n", allocation[i][k]);
 								allocation[i][k] = 0;
 							}
 								stringstream temp;
@@ -124,13 +126,13 @@ public:
 								count++;
 								finished[i] = 1;
 								sucess = true;
+								i = -1;
 							}
 						}
 					}
 
 					if(sucess == false) {
-						sequenceOrReason = "result in unsafe state\n";
-						printf("count is %d\n", count);
+						sequenceOrReason = "result in unsafe state";
 						return false;
 					}
 				}
