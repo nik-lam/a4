@@ -1,8 +1,8 @@
 /*
  * banker.cpp
  *
- * Student Name:
- * Student Number:
+ * Student Name: Nikolaas Lam
+ * Student Number: 10037136
  *
  * Class: CPSC 457 Spring 2017
  * Instructor: Pavol Federl
